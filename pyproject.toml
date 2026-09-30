@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "obsidian-agent-company"
+version = "1.0.0"
+requires-python = ">=3.12"
+dependencies = [
+  "langgraph>=1.0,<2", "langgraph-checkpoint-sqlite>=3,<4",
+  "langchain-openai>=1,<2", "python-telegram-bot>=22,<23",
+  "pydantic-settings>=2,<3", "httpx>=0.28,<1"
+]
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pytest-asyncio>=1,<2", "ruff>=0.12,<1"]
+[project.scripts]
+agent-company = "company.service:main"
+[tool.setuptools.packages.find]
+include = ["company*"]
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+[tool.ruff]
+line-length = 100
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

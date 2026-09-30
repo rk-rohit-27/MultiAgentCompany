@@ -1,0 +1,27 @@
+[Unit]
+Description=Obsidian Agent Company
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+User=agentcompany
+Group=agentcompany
+SupplementaryGroups=docker
+WorkingDirectory=/opt/agent-company
+ExecStart=/opt/agent-company/.venv/bin/agent-company
+Environment=PYTHONUNBUFFERED=1
+Environment=TIKTOKEN_CACHE_DIR=/opt/agent-company/data/tokenizer
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=30
+UMask=0027
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/agent-company/data /opt/agent-company/vault /opt/agent-company/workspace
+
+[Install]
+WantedBy=multi-user.target
