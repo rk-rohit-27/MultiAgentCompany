@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     max_jobs: int = Field(default=20, ge=1, le=100)
     context_tokens: int = Field(default=48000, ge=2000, le=64000)
     run_token_budget: int = Field(default=300000, ge=20000, le=1000000)
+    admin_token: SecretStr | None = None
+    admin_users: str | None = None
+    dashboard_host: str = "0.0.0.0"
+    dashboard_port: int = Field(default=8080, ge=1, le=65535)
 
     def prepare(self):
         for path in (self.data_dir, self.vault_dir, self.workspace_dir):

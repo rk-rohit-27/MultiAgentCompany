@@ -12,7 +12,7 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY:?Set OPENAI_API_KEY in Portainer stack environment variables}
       OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
       MODEL: ${MODEL:-gpt-4.1-mini}
-      SEARXNG_URL: ${SEARXNG_URL:-http://host.docker.internal:8080}
+      SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
       DATA_DIR: /app/data
       VAULT_DIR: /app/vault
       WORKSPACE_DIR: /app/workspace
@@ -23,11 +23,24 @@ services:
       MAX_JOBS: ${MAX_JOBS:-20}
       CONTEXT_TOKENS: ${CONTEXT_TOKENS:-48000}
       RUN_TOKEN_BUDGET: ${RUN_TOKEN_BUDGET:-300000}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?Set ADMIN_TOKEN in Portainer stack environment variables}
+      ADMIN_USERS: ${ADMIN_USERS:-}
+      DASHBOARD_HOST: 0.0.0.0
+      DASHBOARD_PORT: 8080
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    ports:
+      - "${DASHBOARD_PORT_HOST:-8080}:8080"
     volumes:
       - ./data:/app/data
       - ./vault:/app/vault
       - ./workspace:/app/workspace
       - /var/run/docker.sock:/var/run/docker.sock
-    working_dir: /app
+    networks:
+      - default
+      - n8n_default
+
+networks:
+  n8n_default:
+    external: true
+    name: n8n_default

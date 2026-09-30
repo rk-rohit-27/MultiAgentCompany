@@ -145,6 +145,8 @@ docker compose restart
 
 The Compose file uses the host Docker daemon for QA. It must run on a Linux VPS with Docker Engine and the `company-qa:1` image already built. Do not expose the Compose service directly to the public internet; Telegram polling provides the bot connection.
 
+The dashboard is available at `http://VPS_IP:8080`. Set a long random `ADMIN_TOKEN` in Portainer and enter it in the dashboard login field. Put the dashboard behind the VPS firewall or a reverse proxy with HTTPS before exposing it publicly.
+
 ## Start on your Debian machine
 
 Use Python 3.12+, Docker Engine and an OpenAI API key. OpenAI-compatible providers must support tool calling and the configured tokenizer/model; they have not been integration-tested here.

@@ -11,6 +11,7 @@ if sys.platform == "win32":
 else:
     import fcntl
 
+import uvicorn
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from langgraph.types import Command
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
@@ -18,6 +19,7 @@ from telegram.ext import Application, CallbackQueryHandler, CommandHandler
 
 from .agents import Agents, Research
 from .config import Settings
+from .dashboard import create_dashboard
 from .graph import Company
 from .qa import SandboxQA
 from .store import Store
@@ -296,6 +298,13 @@ async def serve(cfg):
         )
         controller = Controller(cfg, store, company.compile(saver), vault)
         app = Application.builder().token(cfg.telegram_token.get_secret_value()).build()
+        dashboard = create_dashboard(cfg, store, vault, controller)
+        dashboard_server = uvicorn.Server(
+            uvicorn.Config(
+                dashboard, host=cfg.dashboard_host, port=cfg.dashboard_port,
+                log_level="warning", access_log=False
+            )
+        )
         for name, handler in (
             ("start", controller.help),
             ("help", controller.help),
@@ -323,6 +332,7 @@ async def serve(cfg):
             tasks = [
                 asyncio.create_task(controller.worker()),
                 asyncio.create_task(controller.notifier(app.bot)),
+                asyncio.create_task(dashboard_server.serve()),
             ]
             stop_task = asyncio.create_task(controller.stop.wait())
             try:
