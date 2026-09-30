@@ -60,6 +60,8 @@ Set `DATA_DIR`, `VAULT_DIR`, and `WORKSPACE_DIR` to folders under `/opt/agent-co
 
 When SearXNG runs directly on the VPS host while the controller runs in Compose, set `SEARXNG_URL=http://host.docker.internal:8080` in `.env`. If SearXNG runs in another Compose service, use that service name and port instead.
 
+For Portainer deployments from GitHub, do not add `.env` to the repository. Portainer does not receive ignored local files from GitHub. Add `TELEGRAM_TOKEN`, `OWNER_USER_ID`, `OWNER_CHAT_ID`, and `OPENAI_API_KEY` in the stack's **Environment variables** section. The Compose file reads those values during deployment and supplies safe defaults for the remaining settings. Keep the token and API key marked as secret values in Portainer.
+
 Initialize the vault and build the fixed QA image:
 
 ```bash

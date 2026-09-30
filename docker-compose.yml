@@ -5,13 +5,24 @@ services:
       dockerfile: Dockerfile
     image: obsidian-agent-company:local
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
+      TELEGRAM_TOKEN: ${TELEGRAM_TOKEN:?Set TELEGRAM_TOKEN in Portainer stack environment variables}
+      OWNER_USER_ID: ${OWNER_USER_ID:?Set OWNER_USER_ID in Portainer stack environment variables}
+      OWNER_CHAT_ID: ${OWNER_CHAT_ID:?Set OWNER_CHAT_ID in Portainer stack environment variables}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?Set OPENAI_API_KEY in Portainer stack environment variables}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      MODEL: ${MODEL:-gpt-4.1-mini}
+      SEARXNG_URL: ${SEARXNG_URL:-http://host.docker.internal:8080}
       DATA_DIR: /app/data
       VAULT_DIR: /app/vault
       WORKSPACE_DIR: /app/workspace
       SANDBOX_IMAGE: company-qa:1
+      SANDBOX_TIMEOUT: ${SANDBOX_TIMEOUT:-180}
+      MAX_RETRIES: ${MAX_RETRIES:-3}
+      MAX_REVISIONS: ${MAX_REVISIONS:-5}
+      MAX_JOBS: ${MAX_JOBS:-20}
+      CONTEXT_TOKENS: ${CONTEXT_TOKENS:-48000}
+      RUN_TOKEN_BUDGET: ${RUN_TOKEN_BUDGET:-300000}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
