@@ -1,0 +1,22 @@
+services:
+  agent-company:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: obsidian-agent-company:local
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATA_DIR: /app/data
+      VAULT_DIR: /app/vault
+      WORKSPACE_DIR: /app/workspace
+      SANDBOX_IMAGE: company-qa:1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./data:/app/data
+      - ./vault:/app/vault
+      - ./workspace:/app/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /app

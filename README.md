@@ -58,6 +58,8 @@ nano .env
 
 Set `DATA_DIR`, `VAULT_DIR`, and `WORKSPACE_DIR` to folders under `/opt/agent-company` unless you have a deliberate backup or storage layout. Use newly rotated Telegram and provider credentials. Never commit `.env` or paste it into support logs.
 
+When SearXNG runs directly on the VPS host while the controller runs in Compose, set `SEARXNG_URL=http://host.docker.internal:8080` in `.env`. If SearXNG runs in another Compose service, use that service name and port instead.
+
 Initialize the vault and build the fixed QA image:
 
 ```bash
@@ -105,6 +107,41 @@ python -m compileall -q company
 ```
 
 The service does not publish generated applications. Review the generated workspace and QA report before deploying any generated project separately.
+
+### Run with Docker Compose
+
+Docker Compose runs the controller and keeps `data/`, `vault/`, and `workspace/` on the VPS. The controller needs the Docker socket because it starts the isolated `company-qa:1` container for generated-project validation. Treat access to `/var/run/docker.sock` as host-level administrative access and use a dedicated VPS.
+
+Create `.env`, initialize the vault, and build the QA image first:
+
+```bash
+cp .env.example .env
+chmod 600 .env
+nano .env
+python3.12 -m venv .venv
+. .venv/bin/activate
+pip install -r requirements.lock
+python -m company.init
+docker build -t company-qa:1 -f sandbox/Dockerfile .
+```
+
+Build and start the controller:
+
+```bash
+docker compose build
+docker compose up -d
+docker compose ps
+docker compose logs -f agent-company
+```
+
+Stop or restart it with:
+
+```bash
+docker compose stop
+docker compose restart
+```
+
+The Compose file uses the host Docker daemon for QA. It must run on a Linux VPS with Docker Engine and the `company-qa:1` image already built. Do not expose the Compose service directly to the public internet; Telegram polling provides the bot connection.
 
 ## Start on your Debian machine
 
